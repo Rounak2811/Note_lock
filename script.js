@@ -1,22 +1,28 @@
+
+// +Add Note button
 document.getElementById("addNoteBtn").addEventListener("click", () => {
+    document.getElementById("noteTitle").value = "";
+    document.getElementById("noteContent").value = "";
     document.getElementById("noteModal").classList.remove("hidden");
+
+    document.getElementById("saveNote").onclick = function () {
+        const title = document.getElementById("noteTitle").value;
+        const content = document.getElementById("noteContent").value;
+        if (title && content) {
+            saveNoteToStorage(title, content);
+            document.getElementById("noteModal").classList.add("hidden");
+            loadNotes();
+        }
+    };
 });
 
+
+// Close modal button
 document.getElementById("closeModal").addEventListener("click", () => {
     document.getElementById("noteModal").classList.add("hidden");
 });
 
-document.getElementById("saveNote").addEventListener("click", () => {
-    const title = document.getElementById("noteTitle").value;
-    const content = document.getElementById("noteContent").value;
-    if (title && content) {
-        const noteItem = document.createElement("div");
-        noteItem.classList.add("p-2", "border", "rounded", "bg-gray-50");
-        noteItem.innerHTML = `<strong>${title}</strong><p>${content}</p>`;
-        document.getElementById("notesList").appendChild(noteItem);
-        document.getElementById("noteModal").classList.add("hidden");
-    }
-});
+
 
 
 let hamburger=document.querySelector('#hamburger');
@@ -35,6 +41,7 @@ document.addEventListener('click',(e)=>{
     }
 });
 
+// Authentication logic displays the text which is to be shown in the login/signup page
 
 function toggleAuth(){
     const title=document.getElementById('authTitle');
@@ -88,6 +95,56 @@ function logout(){
     document.getElementById("mainContent").classList.add("hidden");
 }
 
+function saveNoteToStorage(title, content) {
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.push({ title, content, timestamp: Date.now() });
+    localStorage.setItem("notes", JSON.stringify(notes));
+}
+
+function loadNotes() {
+    const notes = JSON.parse(localStorage.getItem("notes")) || [];
+    const notesList = document.getElementById("notesList");
+    notesList.innerHTML = "";
+
+    notes.forEach((note, index) => {
+        const noteItem = document.createElement("div");
+        noteItem.classList.add("p-2", "border", "rounded", "bg-gray-50");
+        noteItem.dataset.timestamp = note.timestamp;
+        noteItem.innerHTML = `
+            <strong>${note.title}</strong>
+            <p>${note.content}</p>
+            <div class="mt-2 flex space-x-2">
+                <button onclick="editNote(${index})" class="text-blue-500">✏️ Edit</button>
+                <button onclick="deleteNote(${index})" class="text-red-500">🗑️ Delete</button>
+            </div>
+        `;
+        notesList.appendChild(noteItem);
+    });
+}
+
+function deleteNote(index) {
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.splice(index, 1);
+    localStorage.setItem("notes", JSON.stringify(notes));
+    loadNotes();
+}
+
+function editNote(index) {
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    const note = notes[index];
+    document.getElementById("noteTitle").value = note.title;
+    document.getElementById("noteContent").value = note.content;
+    document.getElementById("noteModal").classList.remove("hidden");
+
+    document.getElementById("saveNote").onclick = function () {
+        const updatedTitle = document.getElementById("noteTitle").value;
+        const updatedContent = document.getElementById("noteContent").value;
+        notes[index] = { title: updatedTitle, content: updatedContent, timestamp: Date.now() };
+        localStorage.setItem("notes", JSON.stringify(notes));
+        document.getElementById("noteModal").classList.add("hidden");
+        loadNotes();
+    };
+}
 
 function searchNotes(){
     const query=document.getElementById("searchInput").value.toLowerCase();
@@ -115,3 +172,76 @@ function filterNotes(){
         document.getElementById("notesList").appendChild(note);
     });
 }
+
+// security settings:
+function showSection(sectionId) {
+    const sections = ['mainContent', 'securitySettings'];
+    sections.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    document.getElementById(sectionId)?.classList.remove('hidden');
+}
+// change passwords
+function changePassword() {
+    const newPassword = document.getElementById("newPassword").value;
+    if (newPassword.length < 4) return alert("Password must be at least 4 characters.");
+    let user = JSON.parse(localStorage.getItem("user"));
+    user.password = newPassword;
+    localStorage.setItem("user", JSON.stringify(user));
+    alert("Password updated successfully!");
+}
+// clear all notes
+function clearAllNotes() {
+    if (confirm("Are you sure you want to delete all notes?")) {
+        localStorage.removeItem("notes");
+        loadNotes();
+        alert("All notes cleared.");
+    }
+}
+
+// export notes:
+async function exportNotes() {
+    const notes = JSON.parse(localStorage.getItem("notes")) || [];
+    if (notes.length === 0) {
+        alert("No notes to export.");
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("NoteLock - Notes Backup", 10, 10);
+    doc.setFontSize(12);
+
+    let y = 20;
+
+    notes.forEach((note, index) => {
+        doc.text(`Note ${index + 1}: ${note.title}`, 10, y);
+        y += 7;
+
+        // Handle long content wrapping
+        const splitContent = doc.splitTextToSize(note.content, 180);
+        doc.text(splitContent, 10, y);
+        y += splitContent.length * 7;
+
+        y += 5;
+
+        // New page if space runs out
+        if (y > 270) {
+            doc.addPage();
+            y = 20;
+        }
+    });
+
+    doc.save("NoteLock_Notes_Backup.pdf");
+}
+
+
+// Delete Account:
+function deleteAccount() {
+    if (confirm("This will delete your account and all data. Proceed?")) {
+        localStorage.clear();
+        location.reload();
+    }
+}
+
+
