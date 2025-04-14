@@ -78,7 +78,7 @@
     
         <!-- Change Password -->
         <div class="mb-4">
-            <input type="password" id="newPassword" class="border p-2 mr-2" placeholder="Enter new password">
+            <input type="password" id="newPassword" class="border p-2 mr-2 mb-2" placeholder="Enter new password">
             <button onclick="changePassword()" class="bg-green-500 text-white px-4 py-2 rounded">Change Password</button>
         </div>
     
@@ -96,12 +96,15 @@
         <div>
             <button onclick="deleteAccount()" class="bg-red-600 text-white px-4 py-2 rounded">Delete Account</button>
         </div>
+        <div class="mt-6">
+            <button onclick="showSection('mainContent')" class="bg-gray-600 text-white px-4 py-2 rounded">Back to Notes</button>
+        </div>
     </div>
     <div id="passwordVault" class="hidden mt-8 w-full p-4">
         <h2 class="text-xl font-bold mb-4">Password Vault</h2>
     
         <!-- Add Password Form -->
-        <div class="mb-6 sm:flex-col md:flex-row">
+        <div class="mb-6 flex-col md:flex">
             <input type="text" id="siteName" placeholder="Website/Service Name" class="border p-2 mr-2 mb-2 w-1/4">
             <input type="text" id="vaultUsername" placeholder="Username/Email" class="border p-2 mr-2 mb-2 w-1/4">
             <input type="password" id="vaultPassword" placeholder="Password" class="border p-2 mr-2 mb-2 w-1/4">
@@ -110,6 +113,9 @@
     
         <!-- Password List -->
         <div id="passwordList" class="space-y-2"></div>
+        <div class="mt-6">
+            <button onclick="showSection('mainContent')" class="bg-gray-600 text-white px-4 py-2 rounded">Back to Notes</button>
+        </div>
     </div>
     <!-- Modal for Adding Note -->
     <div id="noteModal" class="flex  hidden fixed inset-0 bg-gray-800 bg-opacity-50 justify-center items-center">
