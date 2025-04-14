@@ -1964,9 +1964,14 @@
       }
     }
   }
-  .sm\:w-3\/4 {
+  .sm\:w-3 {
     @media (width >= 40rem) {
-      width: calc(3/4 * 100%);
+      width: calc(var(--spacing) * 3);
+    }
+  }
+  .sm\:w-3\/5 {
+    @media (width >= 40rem) {
+      width: calc(3/5 * 100%);
     }
   }
   .md\:w-1\/3 {
