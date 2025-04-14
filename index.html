@@ -15,7 +15,7 @@
         <ul class="space-y-4">
             <li><a href="#dashboard" class="block p-2 hover:bg-blue-500 rounded">Dashboard</a></li>
             <li><a href="#notes" class="block p-2 hover:bg-blue-500 rounded">Secure Notes</a></li>
-            <li><a href="#passwords" class="block p-2 hover:bg-blue-500 rounded">Password Vault</a></li>
+            <li><a href="#passwords" class="block p-2 hover:bg-blue-500 rounded" onclick="showSection('passwordVault')">Password Vault</a></li>
             <li><a href="#settings" class="block p-2 hover:bg-blue-500 rounded" onclick="showSection('securitySettings')">Security Settings</a></li>
 
             <li>
@@ -97,7 +97,20 @@
             <button onclick="deleteAccount()" class="bg-red-600 text-white px-4 py-2 rounded">Delete Account</button>
         </div>
     </div>
-
+    <div id="passwordVault" class="hidden mt-8 w-full p-4">
+        <h2 class="text-xl font-bold mb-4">Password Vault</h2>
+    
+        <!-- Add Password Form -->
+        <div class="mb-6 sm:flex-col md:flex-row">
+            <input type="text" id="siteName" placeholder="Website/Service Name" class="border p-2 mr-2 mb-2 w-1/4">
+            <input type="text" id="vaultUsername" placeholder="Username/Email" class="border p-2 mr-2 mb-2 w-1/4">
+            <input type="password" id="vaultPassword" placeholder="Password" class="border p-2 mr-2 mb-2 w-1/4">
+            <button onclick="addCredential()" class="bg-blue-500 text-white px-4 py-2 rounded">Add</button>
+        </div>
+    
+        <!-- Password List -->
+        <div id="passwordList" class="space-y-2"></div>
+    </div>
     <!-- Modal for Adding Note -->
     <div id="noteModal" class="flex  hidden fixed inset-0 bg-gray-800 bg-opacity-50 justify-center items-center">
         <div class="bg-white p-6 rounded-lg  sm:w-3/6 md:w-1/3">

@@ -23,7 +23,9 @@ document.getElementById("closeModal").addEventListener("click", () => {
 });
 
 
-
+// sidebar navigation
+// This code handles the sidebar navigation and toggling of sections in the app. It allows users to switch between different sections like "Notes", "Security Settings", and "Password Vault".
+// It also includes a hamburger menu for smaller screens.
 
 let hamburger=document.querySelector('#hamburger');
 let sidebar=document.querySelector('#sidebar');
@@ -175,9 +177,78 @@ function filterNotes(){
 
 // security settings:
 function showSection(sectionId) {
-    const sections = ['mainContent', 'securitySettings'];
+    const sections = ['mainContent', 'securitySettings','passwordVault'];
     sections.forEach(id => document.getElementById(id)?.classList.add('hidden'));
     document.getElementById(sectionId)?.classList.remove('hidden');
+}
+// password vault:
+function addCredential() {
+    const site = document.getElementById("siteName").value;
+    const username = document.getElementById("vaultUsername").value;
+    const password = document.getElementById("vaultPassword").value;
+
+    if (!site || !username || !password) {
+        alert("Please fill in all fields");
+        return;
+    }
+
+    let vault = JSON.parse(localStorage.getItem("vault")) || [];
+    vault.push({ site, username, password });
+    localStorage.setItem("vault", JSON.stringify(vault));
+
+    document.getElementById("siteName").value = "";
+    document.getElementById("vaultUsername").value = "";
+    document.getElementById("vaultPassword").value = "";
+    loadVault();
+}
+
+function loadVault() {
+    const vault = JSON.parse(localStorage.getItem("vault")) || [];
+    const list = document.getElementById("passwordList");
+    list.innerHTML = "";
+
+    vault.forEach((entry, index) => {
+        const div = document.createElement("div");
+        div.classList.add("p-2", "border", "rounded", "bg-gray-50");
+        div.innerHTML = `
+            <strong>${entry.site}</strong><br>
+            Username: ${entry.username}<br>
+            Password: <span id="pw-${index}">•••••••</span>
+            <button onclick="togglePassword(${index}, '${entry.password}')" class="text-blue-500 ml-2"><i class="fas fa-eye"></i></button>
+            <button onclick="copyPassword('${entry.password}')" class="text-green-500 ml-2"><i class="fas fa-copy"></i></button>
+            <button onclick="deleteCredential(${index})" class="text-red-500 ml-2"><i class="fas fa-trash-alt"></i></button>
+        `;
+        list.appendChild(div);
+    });
+}
+// toggle password visibility:
+function togglePassword(index, actualPassword) {
+    const pwSpan = document.getElementById(`pw-${index}`);
+    if (pwSpan.innerText.includes("•")) {
+        pwSpan.innerText = actualPassword;
+    } else {
+        pwSpan.innerText = "•••••••";
+    }
+}
+
+// copy password to clipboard:
+function copyPassword(password) {
+    navigator.clipboard.writeText(password);
+    alert("Password copied to clipboard!");
+}
+// delete credential:
+
+function deleteCredential(index) {
+    if (confirm("Are you sure you want to delete this credential?")) {
+        let vault = JSON.parse(localStorage.getItem("vault")) || [];
+        vault.splice(index, 1);
+        localStorage.setItem("vault", JSON.stringify(vault));
+        loadVault();
+        alert("Credential deleted successfully!");
+        if (document.getElementById("passwordList").childElementCount === 0) {
+            location.reload();
+        }
+    }
 }
 // change passwords
 function changePassword() {
