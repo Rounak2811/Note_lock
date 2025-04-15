@@ -1987,6 +1987,11 @@
       width: calc(3/6 * 100%);
     }
   }
+  .sm\:flex-col {
+    @media (width >= 40rem) {
+      flex-direction: column;
+    }
+  }
   .md\:flex {
     @media (width >= 48rem) {
       display: flex;
